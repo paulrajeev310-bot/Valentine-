@@ -1,1 +1,340 @@
 # Valentine-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Tech Bae Debugger 💻❤️</title>
+  <!-- canvas-confetti CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --text: #c9d1d9;
+      --pink: #ff69b4;
+      --green: #00ff9d;
+      --purple: #b57edc;
+      --accent: var(--pink);
+    }
+    body.light-mode {
+      --bg: #fff0f5;
+      --text: #333;
+      --pink: #e91e63;
+      --green: #4caf50;
+      --purple: #9c27b0;
+      --accent: var(--green);
+    }
+    body {
+      margin: 0;
+      font-family: 'Courier New', Courier, monospace;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      transition: background 0.5s, color 0.5s;
+    }
+    .container {
+      max-width: 700px;
+      background: rgba(22, 27, 34, 0.7);
+      border: 1px solid var(--green);
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 0 30px rgba(0,255,157,0.2);
+      width: 100%;
+      transition: all 0.5s;
+    }
+    body.light-mode .container {
+      background: rgba(255, 255, 255, 0.9);
+      border-color: var(--pink);
+      box-shadow: 0 0 30px rgba(233,30,99,0.2);
+    }
+    h1, h2, h3 {
+      color: var(--pink);
+      text-shadow: 0 0 10px var(--pink);
+      text-align: center;
+    }
+    .step {
+      display: none;
+      flex-direction: column;
+      gap: 15px;
+    }
+    .step.active {
+      display: flex;
+    }
+    input, textarea, button {
+      font-family: inherit;
+      padding: 12px;
+      border-radius: 6px;
+      border: 1px solid var(--purple);
+      background: #161b22;
+      color: var(--text);
+      font-size: 1.1rem;
+    }
+    body.light-mode input, body.light-mode textarea {
+      background: #fff;
+      color: #333;
+      border-color: var(--pink);
+    }
+    button {
+      background: var(--pink);
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.3s;
+    }
+    button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 20px var(--pink);
+    }
+    .nav-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+    .result {
+      display: none;
+      animation: fadeIn 1.5s;
+    }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .roast, .sweet {
+      margin: 20px 0;
+      padding: 15px;
+      border-radius: 8px;
+    }
+    .roast { background: rgba(255,105,180,0.15); border-left: 5px solid var(--pink); }
+    .sweet { background: rgba(0,255,157,0.15); border-left: 5px solid var(--green); }
+    .code-block {
+      background: #000;
+      padding: 15px;
+      border-radius: 8px;
+      font-size: 1rem;
+      overflow-x: auto;
+      margin: 20px 0;
+      border: 1px solid var(--green);
+    }
+    body.light-mode .code-block {
+      background: #f8f8f8;
+      color: #333;
+      border-color: var(--pink);
+    }
+    .typewriter {
+      overflow: hidden;
+      white-space: nowrap;
+      border-right: 0.15em solid var(--pink);
+      animation: blink-caret 0.75s step-end infinite;
+    }
+    @keyframes blink-caret {
+      from, to { border-color: transparent; }
+      50% { border-color: var(--pink); }
+    }
+    .toggle-btn {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: var(--purple);
+      color: white;
+      padding: 10px 15px;
+      border-radius: 50px;
+      cursor: pointer;
+      z-index: 100;
+    }
+    body.light-mode .toggle-btn {
+      background: var(--pink);
+    }
+    .photo {
+      max-width: 100%;
+      border-radius: 12px;
+      margin: 20px auto;
+      display: block;
+      box-shadow: 0 0 20px var(--purple);
+    }
+  </style>
+</head>
+<body>
+
+  <button class="toggle-btn" onclick="toggleDarkMode()">🌙 / ☀️</button>
+
+  <div class="container">
+    <h1><span id="typeTitle" class="typewriter">Debugging My Heart for You 💻🩷</span></h1>
+
+    <!-- Step 1 -->
+    <div class="step active" id="step1">
+      <label>Your Tech Bae's Name / Nickname:</label>
+      <input type="text" id="name" placeholder="e.g. My Coder King" value="Evanshu" />
+
+      <label>One cute photo URL of him (optional):</label>
+      <input type="url" id="photo" placeholder="https://i.imgur.com/..." />
+
+      <div class="nav-buttons">
+        <button onclick="nextStep(2)">Next →</button>
+      </div>
+    </div>
+
+    <!-- Step 2 -->
+    <div class="step" id="step2">
+      <label>Funny tech habits (comma separated):</label>
+      <textarea id="habits" rows="5">stays up till 4am fixing one tiny bug, explains everything like it's a leetcode problem, has 73 chrome tabs open at all times, says "just 5 more minutes" for 3 hours, talks to rubber duck more than me sometimes</textarea>
+
+      <div class="nav-buttons">
+        <button onclick="prevStep(1)">← Back</button>
+        <button onclick="nextStep(3)">Next →</button>
+      </div>
+    </div>
+
+    <!-- Step 3 -->
+    <div class="step" id="step3">
+      <label>Sweet things you love about his nerdy side (one per line or use defaults):</label>
+      <textarea id="sweet" rows="6">you're the smartest (and cutest) person I know
+you fix my laptop AND my bad days
+your brain is literally the sexiest thing ever
+even your debugging face is adorable
+you make tech talk feel like love language
+I wouldn't trade your late-night commits for anything</textarea>
+
+      <div class="nav-buttons">
+        <button onclick="prevStep(2)">← Back</button>
+        <button onclick="generateLovePage()">Generate Valentine Magic ❤️</button>
+      </div>
+    </div>
+
+    <!-- Result -->
+    <div class="result" id="result">
+      <h2 id="title" class="typewriter"></h2>
+
+      <img id="couplePhoto" class="photo" alt="Your Tech Bae" style="display:none;" />
+
+      <div class="roast">
+        <h3>Dating a man in tech means THIS apparently 😂💻</h3>
+        <ul id="roastList"></ul>
+      </div>
+
+      <div class="sweet">
+        <h3 id="sweetHeader" class="typewriter">But actually... it means I love you more 🩷</h3>
+        <ul id="sweetList"></ul>
+      </div>
+
+      <div class="code-block">
+        <pre><code id="codeMsg"></code></pre>
+      </div>
+
+      <p style="text-align:center; font-size:1.3rem; margin-top:30px;">
+        Happy Valentine's Day, my favorite bug 🐞❤️<br>
+        Deployed straight to your heart.
+      </p>
+
+      <div style="text-align:center; margin-top:20px;">
+        <button onclick="window.print()">Save / Print</button>
+        &nbsp;&nbsp;
+        <button onclick="location.reload()">Start Over</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentStep = 1;
+
+    function nextStep(to) {
+      document.getElementById(`step${currentStep}`).classList.remove('active');
+      currentStep = to;
+      document.getElementById(`step${currentStep}`).classList.add('active');
+    }
+
+    function prevStep(to) {
+      nextStep(to); // reuse
+    }
+
+    function typeWriter(elementId, text, speed = 80, callback) {
+      const el = document.getElementById(elementId);
+      el.textContent = '';
+      let i = 0;
+      const interval = setInterval(() => {
+        if (i < text.length) {
+          el.textContent += text.charAt(i);
+          i++;
+        } else {
+          clearInterval(interval);
+          if (callback) callback();
+        }
+      }, speed);
+    }
+
+    function generateLovePage() {
+      const name = document.getElementById('name').value.trim() || "My Tech Bae";
+      const photoUrl = document.getElementById('photo').value.trim();
+      const habitsText = document.getElementById('habits').value.trim();
+      const sweetText = document.getElementById('sweet').value.trim();
+
+      const habits = habitsText 
+        ? habitsText.split(',').map(h => h.trim()).filter(h => h)
+        : ["example habit 1", "example habit 2"];
+
+      const sweetParts = sweetText 
+        ? sweetText.split('\n').map(s => s.trim()).filter(s => s)
+        : ["you're amazing", "I love you"];
+
+      document.getElementById('title').textContent = ''; // clear for typewriter
+      typeWriter('title', `Dating ${name} means... THIS apparently HAHAHA 🫶`, 70, () => {
+        // Confetti after title types
+        confetti({
+          particleCount: 150,
+          spread: 90,
+          origin: { y: 0.6 },
+          colors: ['#ff69b4', '#00ff9d', '#b57edc', '#ffffff']
+        });
+      });
+
+      // Roast list
+      const roastList = document.getElementById('roastList');
+      roastList.innerHTML = '';
+      habits.forEach(h => {
+        const li = document.createElement('li');
+        li.textContent = `→ ${h} 😭`;
+        roastList.appendChild(li);
+      });
+
+      // Sweet list
+      const sweetList = document.getElementById('sweetList');
+      sweetList.innerHTML = '';
+      sweetParts.forEach(s => {
+        const li = document.createElement('li');
+        li.textContent = `→ ${s} 🩷`;
+        sweetList.appendChild(li);
+      });
+
+      // Sweet header typewriter (starts after title)
+      setTimeout(() => {
+        typeWriter('sweetHeader', "But actually... it means I love you more 🩷", 60);
+      }, 3000);
+
+      // Code block
+      document.getElementById('codeMsg').textContent = 
+`console.log("I love you, ${name} ❤️");
+// Status: Deployed to heart
+// Uptime: Eternal
+// Bugs: Only the cute ones from you`;
+
+      if (photoUrl) {
+        const img = document.getElementById('couplePhoto');
+        img.src = photoUrl;
+        img.style.display = 'block';
+      }
+
+      document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+      document.getElementById('result').style.display = 'block';
+    }
+
+    function toggleDarkMode() {
+      document.body.classList.toggle('light-mode');
+    }
+
+    // Start typewriter on load for main title
+    window.onload = () => {
+      typeWriter('typeTitle', "Debugging My Heart for You 💻🩷", 100);
+    };
+  </script>
+</body>
+</html>
